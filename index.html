@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acompanhamento de Pautas — Pedaço</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #000511;
+      --fg: #ffffff;
+      --accent: #16FAF5;
+      --accent-dim: rgba(22, 250, 245, 0.12);
+      --accent-border: rgba(22, 250, 245, 0.45);
+      --card-bg: linear-gradient(135deg, rgba(0,5,17,0.9) 0%, rgba(22,250,245,0.04) 100%);
+      --muted: rgba(255,255,255,0.45);
+      --surface: rgba(255,255,255,0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Grid dots background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle, rgba(22,250,245,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Header ── */
+    header {
+      position: relative;
+      z-index: 1;
+      padding: 40px 40px 32px;
+      border-bottom: 1px solid var(--accent-border);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 40px;
+      width: 120px;
+      height: 2px;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+    }
+
+    .header-title {
+      font-family: 'Anton', sans-serif;
+      font-size: 32px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .header-title span {
+      color: var(--accent);
+    }
+
+    .header-meta {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Container ── */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
+
+    /* ── Summary cards ── */
+    .summary {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+
+    .summary-card {
+      flex: 1;
+      min-width: 110px;
+      background: var(--card-bg);
+      border: 1px solid var(--accent-border);
+      border-radius: 10px;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(8px);
+    }
+
+    .summary-card .count {
+      font-family: 'Anton', sans-serif;
+      font-size: 34px;
+      line-height: 1;
+      color: var(--accent);
+      text-shadow: 0 0 16px rgba(22,250,245,0.5);
+    }
+
+    .summary-card .label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    .summary-card .indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-bottom: 2px;
+    }
+
+    /* ── Section ── */
+    .section {
+      margin-bottom: 36px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--accent-border);
+    }
+
+    /* Section-specific dot colors */
+    .sec-urgent .section-title::before  { background: #f97316; box-shadow: 0 0 8px #f97316; }
+    .sec-yellow .section-title::before  { background: #eab308; box-shadow: 0 0 8px #eab308; }
+    .sec-gray   .section-title::before  { background: #94a3b8; }
+    .sec-green  .section-title::before  { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+    .sec-red    .section-title::before  { background: #ef4444; }
+
+    /* ── Card ── */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--accent-border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(22,250,245,0.7);
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .card-simple .card-header {
+      cursor: default;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+
+    .card-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    /* ── Badges ── */
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    .badge-green  { background: rgba(34,197,94,0.15);  color: #4ade80; border: 1px solid rgba(34,197,94,0.4); }
+    .badge-yellow { background: rgba(234,179,8,0.15);  color: #facc15; border: 1px solid rgba(234,179,8,0.4); }
+    .badge-red    { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
+    .badge-urgent { background: rgba(249,115,22,0.15); color: #fb923c; border: 1px solid rgba(249,115,22,0.4); }
+    .badge-gray   { background: rgba(148,163,184,0.1); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
+
+    .chevron {
+      font-size: 11px;
+      color: var(--accent);
+      transition: transform 0.25s;
+      opacity: 0.7;
+    }
+
+    .card.open .chevron {
+      transform: rotate(180deg);
+    }
+
+    /* ── Card body ── */
+    .card-body {
+      display: none;
+      padding: 0 20px 20px;
+      border-top: 1px solid rgba(22,250,245,0.12);
+    }
+
+    .card.open .card-body {
+      display: block;
+    }
+
+    .card-body .block-heading {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--accent);
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    .card-body ul {
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .card-body ul li {
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.7;
+      padding-left: 14px;
+      position: relative;
+    }
+
+    .card-body ul li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    .card-body p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.7;
+    }
+
+    .obs-box {
+      margin-top: 14px;
+      background: rgba(22,250,245,0.06);
+      border-left: 2px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.6;
+    }
+
+    /* ── Footer ── */
+    .footer-note {
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,255,255,0.2);
+      margin-top: 48px;
+      letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 28px 20px; }
+      .header-title { font-size: 24px; }
+      header::after { left: 20px; }
+      .container { padding: 28px 16px 48px; }
+      .summary-card .count { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="header-title">Pautas — <span>Pedaço</span></div>
+  </div>
+  <div class="header-meta" id="updated-header"></div>
+</header>
+
+<div class="container">
+
+  <div class="summary" id="summary"></div>
+
+  <div id="board"></div>
+
+  <p class="footer-note" id="footer-note"></p>
+
+</div>
+
+<script>
+// ─── DADOS ────────────────────────────────────────────────────────────────────
+const DATA = {
+  updatedAt: "18/06/2025",
+  sections: [
+    {
+      status: "urgent",
+      label: "Prioridade Urgente",
+      items: [
+        {
+          title: "Site",
+          details: {
+            sections: [
+              {
+                heading: "Por que é urgente",
+                type: "text",
+                content: "O site é pré-requisito para a execução de várias campanhas, ações de divulgação e demais entregas. Sem ele, diversas frentes ficam travadas."
+              },
+              {
+                heading: "Dependências diretas",
+                type: "list",
+                items: [
+                  "Criação de Panfletos novos — exige o site em andamento para seguir.",
+                  "Campanhas digitais e de divulgação em geral."
+                ]
+              },
+              {
+                heading: "Próximo passo",
+                type: "text",
+                content: "Analisar a viabilidade de continuar com o desenvolvimento do site atual ou avaliar outra solução."
+              }
+            ]
+          }
+        },
+        { title: "Aniversário Pedaço — Julho", details: null }
+      ]
+    },
+    {
+      status: "yellow",
+      label: "Em Andamento",
+      items: [
+        {
+          title: "Campanha de Inverno + Happy Hour de Vinhos",
+          details: {
+            sections: [
+              { heading: "Status", type: "list", items: ["Campanha discutida e aprovada.", "Comunicação geral alinhada."] },
+              { heading: "Pendências", type: "list", items: ["Definir se os totens de mesa serão impressos.", "Finalizar materiais de apoio para o salão."] }
+            ],
+            obs: "A campanha continua sendo uma das principais prioridades do mês para fortalecimento do consumo de vinhos e aumento do movimento noturno."
+          }
+        },
+        {
+          title: "Cardápio da Copa",
+          details: {
+            sections: [
+              { heading: "Próximos passos", type: "list", items: ["Analisar desempenho e volume de vendas.", "Avaliar necessidade de ações específicas.", "Definir possíveis ajustes ou oportunidades comerciais."] }
+            ]
+          }
+        },
+        {
+          title: "Lanche Italiano",
+          details: {
+            sections: [
+              { heading: "Próximos passos", type: "list", items: ["Analisar métricas de vendas.", "Avaliar aceitação do produto pelos clientes.", "Identificar horários e dias de maior saída.", "Verificar viabilidade operacional para ampliação do cardápio."] },
+              { heading: "Objetivo", type: "text", content: "Validar o desempenho do lançamento antes da expansão da linha." },
+              { heading: "Possível próxima etapa", type: "text", content: "Desenvolvimento e teste de novos sabores após análise dos resultados atuais." }
+            ]
+          }
+        },
+        {
+          title: "Inverno + Vinhos",
+          details: {
+            sections: [
+              { heading: "Necessário desenvolver", type: "list", items: ["Combinações de vinhos com massas.", "Combinações de vinhos com risotos.", "Sugestões de harmonização.", "Comunicação focada em experiências de inverno."] },
+              { heading: "Objetivo", type: "text", content: "Fortalecer o posicionamento da Pedaço como ambiente acolhedor para consumo de vinhos e pratos quentes." }
+            ]
+          }
+        },
+        {
+          title: "Boteco de Vinhos",
+          details: {
+            sections: [
+              { heading: "Próximos passos", type: "list", items: ["Dar continuidade às ações.", "Fortalecer divulgação.", "Consolidar posicionamento dentro da marca.", "Avaliar frequência ideal de comunicação e ativações."] }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      status: "gray",
+      label: "Pendente",
+      items: [
+        { title: "Criação de Panfletos novos", details: null }
+      ]
+    },
+    {
+      status: "green",
+      label: "Concluído",
+      items: [
+        { title: "Dia dos Namorados", details: null },
+        { title: "Melhorias no Salão", details: null }
+      ]
+    },
+    {
+      status: "red",
+      label: "Cancelado",
+      items: [
+        { title: "Festa Junina / São Pedro", details: null }
+      ]
+    }
+  ]
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
+const badgeClass = { green: "badge-green", yellow: "badge-yellow", red: "badge-red", urgent: "badge-urgent", gray: "badge-gray" };
+const badgeLabel = { green: "Concluído", yellow: "Em andamento", red: "Cancelado", urgent: "Urgente", gray: "Pendente" };
+const secClass   = { green: "sec-green", yellow: "sec-yellow", red: "sec-red", urgent: "sec-urgent", gray: "sec-gray" };
+
+// Date
+const dateStr = "Atualizado em " + DATA.updatedAt;
+document.getElementById("updated-header").textContent = dateStr;
+document.getElementById("footer-note").textContent = dateStr;
+
+// Summary
+const counts = {};
+DATA.sections.forEach(s => counts[s.status] = (counts[s.status] || 0) + s.items.length);
+const summaryOrder = [
+  { key: "urgent", label: "Urgente" },
+  { key: "yellow", label: "Em andamento" },
+  { key: "gray",   label: "Pendente" },
+  { key: "green",  label: "Concluído" },
+  { key: "red",    label: "Cancelado" },
+];
+const summaryEl = document.getElementById("summary");
+summaryOrder.forEach(({ key, label }) => {
+  const el = document.createElement("div");
+  el.className = "summary-card";
+  el.innerHTML = `<div class="count">${counts[key] || 0}</div><div class="label">${label}</div>`;
+  summaryEl.appendChild(el);
+});
+
+// Board
+const board = document.getElementById("board");
+
+DATA.sections.forEach(section => {
+  const secEl = document.createElement("div");
+  secEl.className = "section " + secClass[section.status];
+
+  const titleEl = document.createElement("div");
+  titleEl.className = "section-title";
+  titleEl.textContent = section.label;
+  secEl.appendChild(titleEl);
+
+  section.items.forEach(item => {
+    const hasDetails = item.details && (
+      (item.details.sections && item.details.sections.length) || item.details.obs
+    );
+
+    const card = document.createElement("div");
+    card.className = "card" + (hasDetails ? "" : " card-simple");
+
+    const header = document.createElement("div");
+    header.className = "card-header";
+    header.innerHTML = `
+      <span class="card-title">${item.title}</span>
+      <span class="card-right">
+        <span class="badge ${badgeClass[section.status]}">${badgeLabel[section.status]}</span>
+        ${hasDetails ? '<span class="chevron">▼</span>' : ''}
+      </span>
+    `;
+
+    if (hasDetails) {
+      header.addEventListener("click", () => card.classList.toggle("open"));
+    }
+
+    card.appendChild(header);
+
+    if (hasDetails) {
+      const body = document.createElement("div");
+      body.className = "card-body";
+
+      item.details.sections.forEach(sec => {
+        const h = document.createElement("div");
+        h.className = "block-heading";
+        h.textContent = sec.heading;
+        body.appendChild(h);
+
+        if (sec.type === "list") {
+          const ul = document.createElement("ul");
+          sec.items.forEach(i => {
+            const li = document.createElement("li");
+            li.textContent = i;
+            ul.appendChild(li);
+          });
+          body.appendChild(ul);
+        } else {
+          const p = document.createElement("p");
+          p.textContent = sec.content;
+          body.appendChild(p);
+        }
+      });
+
+      if (item.details.obs) {
+        const obs = document.createElement("div");
+        obs.className = "obs-box";
+        obs.textContent = item.details.obs;
+        body.appendChild(obs);
+      }
+
+      card.appendChild(body);
+    }
+
+    secEl.appendChild(card);
+  });
+
+  board.appendChild(secEl);
+});
+</script>
+
+</body>
+</html>
