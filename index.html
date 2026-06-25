@@ -344,7 +344,7 @@
 <script>
 // ─── DADOS ────────────────────────────────────────────────────────────────────
 const DATA = {
-  updatedAt: "18/06/2025",
+  updatedAt: "25/06/2025",
   sections: [
     {
       status: "urgent",
@@ -352,6 +352,7 @@ const DATA = {
       items: [
         {
           title: "Site",
+          extraBadge: "gray",
           details: {
             sections: [
               {
@@ -372,10 +373,34 @@ const DATA = {
                 type: "text",
                 content: "Analisar a viabilidade de continuar com o desenvolvimento do site atual ou avaliar outra solução."
               }
-            ]
+            ],
+            obs: "Está em análise com o advogado por questão de possível vazamento de dados pela LGPD/NIMO."
           }
         },
-        { title: "Aniversário Pedaço — Julho", details: null }
+        {
+          title: "Aniversário Pedaço — Julho",
+          extraBadge: "yellow",
+          details: {
+            sections: [
+              {
+                heading: "Delivery",
+                type: "list",
+                items: [
+                  "Combo semanal promocional: pizza + refrigerante.",
+                  "Pizza doce broto (valor a definir) — opcional para o cliente."
+                ]
+              },
+              {
+                heading: "Salão",
+                type: "list",
+                items: [
+                  "Rodízio de vinhos.",
+                  "Totem impresso de vinhos — produção necessária."
+                ]
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -396,7 +421,15 @@ const DATA = {
           title: "Cardápio da Copa",
           details: {
             sections: [
-              { heading: "Próximos passos", type: "list", items: ["Analisar desempenho e volume de vendas.", "Avaliar necessidade de ações específicas.", "Definir possíveis ajustes ou oportunidades comerciais."] }
+              {
+                heading: "Próximos passos",
+                type: "list",
+                items: [
+                  "Análise de desempenho e volume de vendas — venda muito baixa, aumentar os anúncios.",
+                  "Avaliar necessidade de ações específicas.",
+                  "Definir possíveis ajustes ou oportunidades comerciais."
+                ]
+              }
             ]
           }
         },
@@ -404,26 +437,20 @@ const DATA = {
           title: "Lanche Italiano",
           details: {
             sections: [
-              { heading: "Próximos passos", type: "list", items: ["Analisar métricas de vendas.", "Avaliar aceitação do produto pelos clientes.", "Identificar horários e dias de maior saída.", "Verificar viabilidade operacional para ampliação do cardápio."] },
-              { heading: "Objetivo", type: "text", content: "Validar o desempenho do lançamento antes da expansão da linha." },
-              { heading: "Possível próxima etapa", type: "text", content: "Desenvolvimento e teste de novos sabores após análise dos resultados atuais." }
-            ]
-          }
-        },
-        {
-          title: "Inverno + Vinhos",
-          details: {
-            sections: [
-              { heading: "Necessário desenvolver", type: "list", items: ["Combinações de vinhos com massas.", "Combinações de vinhos com risotos.", "Sugestões de harmonização.", "Comunicação focada em experiências de inverno."] },
-              { heading: "Objetivo", type: "text", content: "Fortalecer o posicionamento da Pedaço como ambiente acolhedor para consumo de vinhos e pratos quentes." }
-            ]
-          }
-        },
-        {
-          title: "Boteco de Vinhos",
-          details: {
-            sections: [
-              { heading: "Próximos passos", type: "list", items: ["Dar continuidade às ações.", "Fortalecer divulgação.", "Consolidar posicionamento dentro da marca.", "Avaliar frequência ideal de comunicação e ativações."] }
+              {
+                heading: "Situação atual",
+                type: "text",
+                content: "Vendas caindo. Precisamos aumentar a quantidade de vendas com anúncios."
+              },
+              {
+                heading: "Próximos passos",
+                type: "list",
+                items: [
+                  "Reforçar anúncios pagos para o produto.",
+                  "Avaliar aceitação e identificar horários de maior saída.",
+                  "Verificar viabilidade operacional para ampliação do cardápio."
+                ]
+              }
             ]
           }
         }
@@ -446,6 +473,23 @@ const DATA = {
                   "Criação de mais posts sobre cardápio da copa."
                 ]
               }
+            ]
+          }
+        },
+        {
+          title: "Boteco de Vinhos",
+          details: {
+            sections: [
+              { heading: "Próximos passos", type: "list", items: ["Dar continuidade às ações.", "Fortalecer divulgação.", "Consolidar posicionamento dentro da marca.", "Avaliar frequência ideal de comunicação e ativações."] }
+            ]
+          }
+        },
+        {
+          title: "Inverno + Vinhos",
+          details: {
+            sections: [
+              { heading: "Necessário desenvolver", type: "list", items: ["Combinações de vinhos com massas.", "Combinações de vinhos com risotos.", "Sugestões de harmonização.", "Comunicação focada em experiências de inverno."] },
+              { heading: "Objetivo", type: "text", content: "Fortalecer o posicionamento da Pedaço como ambiente acolhedor para consumo de vinhos e pratos quentes." }
             ]
           }
         }
@@ -517,12 +561,17 @@ DATA.sections.forEach(section => {
     const card = document.createElement("div");
     card.className = "card" + (hasDetails ? "" : " card-simple");
 
+    const extraBadgeHTML = item.extraBadge
+      ? `<span class="badge ${badgeClass[item.extraBadge]}">${badgeLabel[item.extraBadge]}</span>`
+      : '';
+
     const header = document.createElement("div");
     header.className = "card-header";
     header.innerHTML = `
       <span class="card-title">${item.title}</span>
       <span class="card-right">
         <span class="badge ${badgeClass[section.status]}">${badgeLabel[section.status]}</span>
+        ${extraBadgeHTML}
         ${hasDetails ? '<span class="chevron">▼</span>' : ''}
       </span>
     `;
